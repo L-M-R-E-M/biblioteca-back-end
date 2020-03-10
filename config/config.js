@@ -8,7 +8,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 let urlDB;
 
 if(process.env.NODE_ENV === 'dev'){
-    urlDB = 'mongodb://localhost:27017/bibliotecaLaEsperanza';
+    urlDB = 'mongodb://localhost:27017/bolsaUTAgsVBD';
 }else{
     urlDB = 'mongodb+srv://admin:admin@cluster0-xqiuj.mongodb.net/test?retryWrites=true&w=majority';
 }

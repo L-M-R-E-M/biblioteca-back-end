@@ -13,9 +13,7 @@ let verificaToken = (req, res, next) => {
             });
         }
 
-        req.usuario = decoded.usuario;
-        req.libro = decoded.libro;
-        req.prestamo = decoded.prestamo;
+        req.registrarEmpresa = decoded.registrarEmpresa;
 
         next();
     });

@@ -3,46 +3,50 @@ const bcrypt = require('bcrypt');
 const _ = require('underscore');
 const app = express();
 const { verificaToken } = require('../middlewares/autenticacion');
-const Usuario = require('../models/usuario');
+const Empresa = require('../models/registrarEmpresa');
 
-app.get('/usuario', [verificaToken], (req, res) => {
+app.get('/empresa', [verificaToken], (req, res) => {
     let desde = req.params.desde || 0;
     desde = Number(desde);
 
     let limite = req.params.limite || 0;
     limite = Number(limite);
-    Usuario.find({ estado: true })
+    Empresa.find({ estado: true })
         .skip(desde)
         .limit(limite)
-        .exec((err, usuarios) => {
+        .exec((err, empresas) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
                     err
                 });
             }
-            console.log(req.usuario);
+            console.log(req.empresa);
             return res.status(200).json({
                 ok: true,
-                count: usuarios.length,
-                usuarios
+                count: empresas.length,
+                empresas
             })
         });
 });
 
 
-app.post('/usuario', [verificaToken], (req, res) => {
+app.post('/empresa', [verificaToken], (req, res) => {
     let body = req.body;
 
-    let usuario = new Usuario({
+    let empresa = new Empresa({
         nombre: body.nombre,
-        apellido: body.apellido,
+        direccion: body.direccion,
         email: body.email,
+        telefono: body.telefono,
+        rfc: body.rfc,
         password: bcrypt.hashSync(body.password, 10),
-        role: body.role
+        ubicacion: body.ubicacion,
+        giro: body.giro,
+        tamano: body.tamano
     });
 
-    usuario.save((err, usrDB) => {
+    empresa.save((err, empDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -51,17 +55,17 @@ app.post('/usuario', [verificaToken], (req, res) => {
         }
         return res.status(200).json({
             ok: true,
-            usrDB
+            empDB
         });
 
     });
 });
 
-app.put('/usuario/:id', [verificaToken], (req, res) => {
+app.put('/empresa/:id', [verificaToken], (req, res) => {
     let id = req.params.id;
-    let body = _.pick(req.body, ['nombre', 'apellido', 'role', 'estado']);
+    let body = _.pick(req.body, ['direccion', 'ubicacion', 'giro', 'tamano']);
 
-    Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, usrDB) => {
+    Empresa.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, empDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -70,14 +74,14 @@ app.put('/usuario/:id', [verificaToken], (req, res) => {
         }
         return res.status(200).json({
             ok: true,
-            usrDB
+            empDB
         });
     });
 });
 
-app.delete('/usuario/:id', [verificaToken], (req, res) => {
+app.delete('/empresa/:id', [verificaToken], (req, res) => {
     let id = req.params.id;
-    Usuario.deleteOne({ _id: id }, (err, resp) => {
+    Empresa.deleteOne({ _id: id }, (err, resp) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -89,7 +93,7 @@ app.delete('/usuario/:id', [verificaToken], (req, res) => {
                 ok: false,
                 err: {
                     id,
-                    msg: 'Usuario no encontrado'
+                    msg: 'Empresa no encontrada'
                 }
             });
         }
